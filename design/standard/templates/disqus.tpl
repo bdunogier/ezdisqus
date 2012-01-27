@@ -13,6 +13,10 @@
 <script type="text/javascript">
     var disqus_shortname = '{cond( is_set( $disqus_shortname ), $disqus_shortname, ezini( 'Base', 'DisqusShortname', 'disqus.ini' ) )}';
 
+{if ezini( 'Base', 'DevelopmentMode', 'disqus.ini' )|eq( 'enabled' )}
+    var disqus_developer = 1
+
+{/if}
 {if is_set( $disqus_identifier )}
     var disqus_identifier = '{$disqus_identifier}';
 
