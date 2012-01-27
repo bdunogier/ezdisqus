@@ -1,19 +1,35 @@
+{*
+    Disqus template for comments.
+    Available variables :
+      - $disqus_shortname (defaults to disqus.ini/[Base].DisqusShortname)
+      - $disqus_identifier
+      - $disqus_url
+      - $disqus_title
+
+    You can pass those variables via the include parameters :
+    {include uri="design:standard/disqus.tpl" disqus_identifier="some_identifier" disqus_title="My custom title"}
+*}
 <div id="disqus_thread"></div>
 <script type="text/javascript">
 {if is_set( $disqus_shortname )}
     var disqus_shortname = '{$disqus_shortname}';
+
 {else}
     var disqus_shortname = '{ezini( 'Base', 'DisqusShortname', 'disqus.ini' )}
+
 {/if}
 {if is_set( $disqus_identifier )}
     var disqus_identifier = '{$disqus_identifier}';
+
 {/if}
-{*if is_set( $disqus_url )}
+{if is_set( $disqus_url )}
     var disqus_url = '{$disqus_url}';
-{/if*}
-{*if is_set( $disqus_title )}
+
+{/if}
+{if is_set( $disqus_title )}
     var disqus_title = '{$disqus_title|wash}';
-{/if*}
+
+{/if}
 
 {literal}
     (function() {
