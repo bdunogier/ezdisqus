@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<software>
+	<metadata>
+		<name>eZ Disqus</name>
+		<version>1.0alpha</version>
+		<copyright>Copyright © 2012 Bertrand Dunogier, Jérôme Vieilledent</copyright>
+		<license>GNU General Public License v3.0</license>
+		<info_url>http://projects.ez.no/ezdisqus</info_url>
+	</metadata>
+</software>
