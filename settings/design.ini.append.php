@@ -2,6 +2,6 @@
 # eZ publish configuration file for design
 
 [ExtensionSettings]
-DesignExtensions[]=eZDisqus
+DesignExtensions[]=ezdisqus
 
 */ ?>
