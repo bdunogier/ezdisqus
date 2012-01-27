@@ -2,6 +2,8 @@
 <script type="text/javascript">
     {if is_set( $disqus_shortname )}
         var disqus_shortname = '{$disqus_shortname}';
+    {else}
+        var disqus_shortname = '{ezini( 'Base', 'DisqusShortname', 'disqus.ini' )}
     {/if}
 
     (function () {
