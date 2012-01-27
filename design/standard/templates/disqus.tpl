@@ -3,7 +3,7 @@
     Available variables :
       - $disqus_shortname (defaults to disqus.ini/[Base].DisqusShortname)
       - $disqus_identifier
-      - $disqus_url
+      - $disqus_url : Full absolute URL (e.g. http://www.mysite.com/my-article)
       - $disqus_title
 
     You can pass those variables via the include parameters :
