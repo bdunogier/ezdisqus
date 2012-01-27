@@ -11,7 +11,7 @@
 *}
 <div id="disqus_thread"></div>
 <script type="text/javascript">
-    var disqus_shortname = '{cond( is_set( $disqus_shortname ), $disqus_shortname, ezini( 'Base', 'DisqusShortname', 'disqus.ini' ) )}'
+    var disqus_shortname = '{cond( is_set( $disqus_shortname ), $disqus_shortname, ezini( 'Base', 'DisqusShortname', 'disqus.ini' ) )}';
 
 {if is_set( $disqus_identifier )}
     var disqus_identifier = '{$disqus_identifier}';
