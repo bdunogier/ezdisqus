@@ -41,7 +41,7 @@ class DisqusCommentsType extends eZDataType
     {
     }
 
-	/**
+    /**
      * Validates the input from the class definition form concerning this attribute.
      *
      * @param eZHTTPTool $http
@@ -193,8 +193,8 @@ class DisqusCommentsType extends eZDataType
      * Returns the content.
      * Result is an associative array :
      *      - comments_enabled : Boolean indicating if comments are enabled or not for content
-     * 		- shortname : Disqus short name
-     * 		- identifier : Content identifier for Disqus
+     * 	    - shortname : Disqus short name
+     * 	    - identifier : Content identifier for Disqus
      *      - title : The content object name
      *      - url : URL for main node
      *
