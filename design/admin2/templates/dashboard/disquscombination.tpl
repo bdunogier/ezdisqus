@@ -4,4 +4,3 @@
      $colorTheme = ezini( 'DashboardBlock_disquscombination', 'Color', 'dashboard.ini' )}
 <script type="text/javascript"
         src="http://{$disqus_shortname}.disqus.com/combination_widget.js?num_items={$block.number_of_items}&hide_mods=0&color={$colorTheme}&default_tab={$default_tab}&excerpt_length=200"></script>
-<a href="http://disqus.com/">Powered by Disqus</a>
