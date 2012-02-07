@@ -17,7 +17,7 @@ class DisqusCommentsType extends eZDataType
     const CLASSATTRIBUTE_COMMENTS_ACTIVATED_DEFAULT_FIELD = 'data_int1',
           CLASSATTRIBUTE_COMMENTS_ACTIVATED_DEFAULT = 0;
 
-    const COMMENTS_ACTIVATED_VARIABLE = '_disquscomments_enabled_';
+    const COMMENTS_ENABLED_VARIABLE = '_disquscomments_enabled_';
 
     public function __construct()
     {
@@ -78,7 +78,7 @@ class DisqusCommentsType extends eZDataType
     public function fetchClassAttributeHTTPInput( $http, $base, $classAttribute )
     {
         // Comments default activation
-        $activationFieldName = $base . self::COMMENTS_ACTIVATED_VARIABLE . $classAttribute->attribute( 'id' );
+        $activationFieldName = $base . self::COMMENTS_ENABLED_VARIABLE . $classAttribute->attribute( 'id' );
         if( $http->hasPostVariable( $activationFieldName ) )
         {
             $classAttribute->setAttribute( self::CLASSATTRIBUTE_COMMENTS_ACTIVATED_DEFAULT_FIELD, 1 );
@@ -166,7 +166,7 @@ class DisqusCommentsType extends eZDataType
      */
     public function fetchObjectAttributeHTTPInput( $http, $base, $contentObjectAttribute )
     {
-        $fieldName = $base . self::COMMENTS_ACTIVATED_VARIABLE . $contentObjectAttribute->attribute( 'id' );
+        $fieldName = $base . self::COMMENTS_ENABLED_VARIABLE . $contentObjectAttribute->attribute( 'id' );
         if( $http->hasPostVariable( $fieldName ) )
         {
             $contentObjectAttribute->setAttribute( 'data_int', 1 );
