@@ -142,19 +142,6 @@ class DisqusCommentsType extends eZDataType
     }
 
     /**
-     * Fixes up the data that has been posted with the object edit form
-     * This method is called only if validation method (self::validateObjectAttributeHTTPInput()) returned eZInputValidator::STATE_INTERMEDIATE
-     *
-     * @param eZHTTPTool $http
-     * @param string $base
-     * @param eZContentObjectAttribute $objectAttribute
-     * @see eZDataType::fixupObjectAttributeHTTPInput()
-     */
-    public function fixupObjectAttributeHTTPInput( $http, $base, $objectAttribute )
-    {
-    }
-
-    /**
      * Fetches all variables from the object and handles them
      * Data store can be done here
      *
