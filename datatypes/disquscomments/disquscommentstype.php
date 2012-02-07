@@ -130,7 +130,6 @@ class DisqusCommentsType extends eZDataType
 
     /**
      * Validates input on content object level
-     * Checks if entered Amazon ID is a valid ASIN
      *
      * @param eZHTTPTool $http
      * @param string $base POST variable name prefix (Always "ContentObjectAttribute")
