@@ -10,7 +10,7 @@ namespace Disqus\Export;
 
 /**
  * Interface for Disqus exporters.
- * Any exporter must implement it to work properly with DisqusExportFactory
+ * Any exporter must implement it to work properly with {\Disqus\Export\Process}
  */
 interface ExporterInterface
 {
