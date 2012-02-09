@@ -14,15 +14,25 @@ namespace Disqus\Export;
 class Processor
 {
     /**
-     * Exporter to use by the processor
-     *
      * @var \Disqus\Export\ExporterInterface
      */
     protected $exporter;
 
-    public function __construct( ExporterInterface $exporter )
+    /**
+     * @var \Disqus\Export\FormatterInterface
+     */
+    protected $formatter;
+
+    /**
+     * Builds a new export processor.
+     *
+     * @param \Disqus\Export\ExporterInterface $exporter Exporter to use by the processor
+     * @param \Disqus\Export\FormatterInterface $formatter Formatter to use by the processor
+     */
+    public function __construct( ExporterInterface $exporter, FormatterInterface $formatter )
     {
         $this->exporter = $exporter;
+        $this->formatter = $formatter;
     }
 
     /**
