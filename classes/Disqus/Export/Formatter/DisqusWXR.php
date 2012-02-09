@@ -169,4 +169,15 @@ class DisqusWXR implements FormatterInterface
     {
         return $this->xmlDoc->saveXML();
     }
+
+    /**
+     * Returns the internal formatted data.
+     * e.g. DOMDocument object if working with XML
+     *
+     * @return DOMDocument
+     */
+    public function getData()
+    {
+        return $this->xmlDoc;
+    }
 }

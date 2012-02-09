@@ -36,4 +36,12 @@ class FormatterInterface
      * @return string
      */
     public function renderString();
+
+    /**
+     * Returns the internal formatted data.
+     * e.g. DOMDocument object if working with XML
+     *
+     * @return mixed
+     */
+    public function getData();
 }
