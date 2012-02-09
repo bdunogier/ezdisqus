@@ -42,6 +42,36 @@ class Processor
      */
     public function export()
     {
+        $this->exporter->initialize();
+        $this->formatter->initialize();
 
+        while ( $thread = $this->exporter->getNextThread() )
+        {
+            $comments = $this->exporter->getCommentsByThread( $thread );
+            $this->formatter->formatThread( $thread, $comments );
+        }
+
+        $this->exporter->cleanup();
+    }
+
+    /**
+     * Returns exported data, formatted.
+     * Returned value depends on your formatter.
+     *
+     * @return mixed
+     */
+    public function getExportedData()
+    {
+        return $this->formatter->getData();
+    }
+
+    /**
+     * Returns the string representation of exported data
+     *
+     * @return string
+     */
+    public function render()
+    {
+        return $this->formatter->renderString();
     }
 }
