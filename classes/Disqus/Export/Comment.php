@@ -45,6 +45,13 @@ class Comment
     public $authorIp;
 
     /**
+     * Author URL (like his website or profile)
+     *
+     * @var string
+     */
+    public $authorUrl;
+
+    /**
      * Comment date (assumed GMT timezone)
      *
      * @var DateTime
