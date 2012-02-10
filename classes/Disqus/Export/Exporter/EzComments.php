@@ -9,13 +9,31 @@
 namespace Disqus\Export\Exporter;
 use Disqus\Export\ExporterInterface,
     Disqus\Export\Thread,
-    Disqus\Export\Comment;
+    Disqus\Export\Comment,
+    \eZPersistentObject,
+    \ezcomComment,
+    \ezcomCommentsType,
+    \eZContentObject,
+    \eZURI,
+    \DateTime,
+    \DateTimeZone;
 
 /**
  * Exporter for eZ Comments
  */
 class EzComments implements ExporterInterface
 {
+    /**
+     * Array of commented contentobject ids
+     *
+     * @var array
+     */
+    private $contentObjectIds = array();
+
+    private $rowIndex = 0;
+
+    private $rowCount;
+
     public function __construct()
     {
 
@@ -40,7 +58,17 @@ class EzComments implements ExporterInterface
      */
     public function initialize()
     {
+        $limit = null;
+        $this->contentObjectIds = eZPersistentObject::fetchObjectList(
+            ezcomComment::definition(),
+            array( 'contentobject_id' ),
+            null, null,
+            $limit,
+            false, // $asObject
+            array( 'contentobject_id' ) // Grouping
+        );
 
+        $this->rowCount = count( $this->contentObjectIds );
     }
 
     /**
@@ -50,7 +78,7 @@ class EzComments implements ExporterInterface
      */
     public function getCommentsCount()
     {
-
+        return eZPersistentObject::count( ezcomComment::definition() );
     }
 
     /**
@@ -60,7 +88,7 @@ class EzComments implements ExporterInterface
      */
     public function getThreadsCount()
     {
-
+        return $this->rowCount;
     }
 
     /**
@@ -73,7 +101,42 @@ class EzComments implements ExporterInterface
      */
     public function getNextThread()
     {
+        if ( $this->rowIndex < $this->rowCount )
+        {
+            $contentObject = eZContentObject::fetch( $this->contentObjectIds[$this->rowIndex] );
+            $dm = $contentObject->dataMap();
+            $ezcommentsAttribute = null;
+            foreach ( $dm as $attribute )
+            {
+                if ( $attribute->attribute( 'data_type_string' ) === ezcomCommentsType::DATA_TYPE_STRING )
+                {
+                    $ezcommentsAttribute = $atttribute;
+                    break;
+                }
+            }
 
+            // Building the Thread object
+            // title and content properties get the same content since $thread->content is not really important
+            $thread = new Thread;
+            $thread->title = $thread->content = $contentObject->name();
+            $thread->identifier = $contentObject->attribute( 'id' );
+            $urlAlias = $contentObject->mainNode()->urlAlias();
+            eZURI::transformURI( $urlAlias, false, 'absolute' );
+            $thread->link = $urlAlias;
+            $thread->postDate = new DateTime(
+                $contentObject->attribute( 'published' ),
+                new DateTimeZone( 'gmt' )
+            );
+            // Check if comments are open or closed
+            $thread->commentsEnabled = $ezcommentsAttribute->attribute( 'data_int' ) == 1;
+
+            eZContentObject::clearCache( array( $contentObject->attribute( 'id' ) ) );
+            $this->rowIndex++;
+
+            return $thread;
+        }
+
+        return false;
     }
 
     /**
@@ -83,7 +146,38 @@ class EzComments implements ExporterInterface
      */
     public function getCommentsByThread( Thread $thread )
     {
+        $comments = array();
+        // Using fetchByContentObjectIDList here because fetchByContentObjectID() has language as mandatory param.
+        $ezcomments = ezcomComment::fetchByContentObjectIDList( array( $thread->identifier ) );
+        foreach ( $ezcomments as $ezcomment )
+        {
+            $comments[] = $this->buildCommentFromEzComment( $ezcomment );
+        }
 
+        unset( $ezcomments );
+        return $comments;
+    }
+
+    /**
+     * @param \ezcomComment $ezcomment
+     * @return \Disqus\Export\Comment
+     */
+    protected function buildCommentFromEzComment( ezcomComment $ezcomment )
+    {
+        $comment = new Comment;
+        $comment->id = $ezcomment->attribute( 'id' );
+        $comment->authorName = $ezcomment->attribute( 'name' );
+        $comment->authorMail = $ezcomment->attribute( 'email' );
+        $comment->authorIp = $ezcomment->attribute( 'ip' );
+        $comment->authorUrl = $ezcomment->attribute( 'url' );
+        $comment->date = new DateTime(
+            $ezcomment->attribute( 'modified' ),
+            new DateTimeZone( 'gmt' )
+        );
+        $comment->content = $ezcomment->attribute( 'text' );
+        $comment->isApproved = $ezcomment->attribute( 'status' ) == 1;
+
+        return $comment;
     }
 
     /**
