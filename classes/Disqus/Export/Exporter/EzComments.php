@@ -111,7 +111,7 @@ class EzComments implements ExporterInterface
             {
                 if ( $attribute->attribute( 'data_type_string' ) === ezcomCommentsType::DATA_TYPE_STRING )
                 {
-                    $ezcommentsAttribute = $atttribute;
+                    $ezcommentsAttribute = $attribute;
                     break;
                 }
             }
