@@ -5,7 +5,7 @@ use Disqus\Export\Processor as ExportProcessor,
 
 $processor = new ExportProcessor(
     new EzCommentsExporter(),
-    new DisqusFormatter()
+    new DisqusFormatter( true )
 );
 $processor->export();
 echo $processor->render();
