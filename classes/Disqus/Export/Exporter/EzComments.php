@@ -123,7 +123,7 @@ class EzComments implements ExporterInterface
             $thread->identifier = $contentObject->attribute( 'id' );
             $thread->link = $this->generateThreadLinkByContentObject( $contentObject );
             $thread->postDate = new DateTime(
-                $contentObject->attribute( 'published' ),
+                '@' . $contentObject->attribute( 'published' ),
                 new DateTimeZone( 'gmt' )
             );
             // Check if comments are open or closed
@@ -192,7 +192,7 @@ class EzComments implements ExporterInterface
         $comment->authorIp = $ezcomment->attribute( 'ip' );
         $comment->authorUrl = $ezcomment->attribute( 'url' );
         $comment->date = new DateTime(
-            $ezcomment->attribute( 'modified' ),
+            '@' . $ezcomment->attribute( 'modified' ),
             new DateTimeZone( 'gmt' )
         );
         $comment->content = $ezcomment->attribute( 'text' );
