@@ -11,7 +11,7 @@ namespace Disqus\Export;
 /**
  * Interface for Disqus formatters
  */
-class FormatterInterface
+interface FormatterInterface
 {
     /**
      * Initializes the formatter.
