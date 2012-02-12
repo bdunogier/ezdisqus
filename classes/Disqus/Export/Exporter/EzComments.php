@@ -127,7 +127,8 @@ class EzComments implements ExporterInterface
                 new DateTimeZone( 'gmt' )
             );
             // Check if comments are open or closed
-            $thread->commentsEnabled = $ezcommentsAttribute->attribute( 'data_int' ) == 1;
+            if ( $ezcommentsAttribute->attribute( 'data_int' ) == 1 || $ezcommentsAttribute->attribute( 'data_int' ) == null )
+                $thread->commentsEnabled = true;
 
             eZContentObject::clearCache( array( $contentObject->attribute( 'id' ) ) );
             $this->rowIndex++;
