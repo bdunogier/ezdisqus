@@ -63,14 +63,11 @@ class EzComments implements ExporterInterface
     public function initialize()
     {
         $limit = null;
-        $this->contentObjectIds = eZPersistentObject::fetchObjectList(
-            ezcomComment::definition(),
-            array( 'contentobject_id' ),
-            null, null,
-            $limit,
-            false, // $asObject
-            array( 'contentobject_id' ) // Grouping
-        );
+        $db = eZDB::instance();
+        foreach ( $db->arrayQuery( 'SELECT DISTINCT contentobject_id FROM ezcomment' ) as $row )
+        {
+            $this->contentObjectIds[] = $row['contentobject_id'];
+        }
 
         $this->rowCount = count( $this->contentObjectIds );
     }
