@@ -9,7 +9,8 @@
 namespace Disqus\Export\Formatter;
 use Disqus\Export\FormatterInterface,
     Disqus\Export\Thread,
-    Disqus\Export\Comment;
+    Disqus\Export\Comment,
+    \DOMDocument;
 
 /**
  * Formatter for Disqus WXR (Wordpress eXtended RSS) format.
@@ -17,6 +18,8 @@ use Disqus\Export\FormatterInterface,
  */
 class DisqusWXR implements FormatterInterface
 {
+    private $debug;
+
     private $rootNS = array(
         'content' => 'http://purl.org/rss/1.0/modules/content/',
         'dsq'     => 'http://www.disqus.com',
@@ -38,9 +41,9 @@ class DisqusWXR implements FormatterInterface
      */
     private $channelTag;
 
-    public function __construct()
+    public function __construct( $debug = false )
     {
-
+        $this->debug = $debug;
     }
 
     /**
@@ -51,7 +54,8 @@ class DisqusWXR implements FormatterInterface
      */
     public function initialize()
     {
-        $this->xmlDoc = new \DOMDocument( '1.0', 'UTF-8' );
+        $this->xmlDoc = new DOMDocument( '1.0', 'UTF-8' );
+        $this->xmlDoc->formatOutput = $this->debug;
         $root = $this->xmlDoc->createElement( 'rss' );
         $root->setAttribute( 'version', '2.0' );
         foreach ( $this->rootNS as $ns => $nsUrl )
