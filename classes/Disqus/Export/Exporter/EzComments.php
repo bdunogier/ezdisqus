@@ -15,6 +15,10 @@ use Disqus\Export\ExporterInterface,
     \ezcomCommentsType,
     \eZContentObject,
     \eZURI,
+    \eZDB,
+    \eZINI,
+    \eZSSLZone,
+    \eZSys,
     \DateTime,
     \DateTimeZone;
 
@@ -120,9 +124,7 @@ class EzComments implements ExporterInterface
             $thread = new Thread;
             $thread->title = $thread->content = $contentObject->name();
             $thread->identifier = $contentObject->attribute( 'id' );
-            $urlAlias = $contentObject->mainNode()->urlAlias();
-            eZURI::transformURI( $urlAlias, false, 'absolute' );
-            $thread->link = $urlAlias;
+            $thread->link = $this->generateThreadLinkByContentObject( $contentObject );
             $thread->postDate = new DateTime(
                 $contentObject->attribute( 'published' ),
                 new DateTimeZone( 'gmt' )
@@ -137,6 +139,28 @@ class EzComments implements ExporterInterface
         }
 
         return false;
+    }
+
+    /**
+     * Generates absolute link for thread (content object), taking care of SSL zones when applyable
+     *
+     * @param eZContentObject $contentObject Content object to generate link for
+     * @return string
+     */
+    protected function generateThreadLinkByContentObject( eZContentObject $contentObject )
+    {
+        $ini = eZINI::instance();
+        $protocol = 'http://';
+        $portString = '';
+        $host = $ini->variable( 'SiteSettings', 'SiteURL' );
+        if ( eZSSLZone::checkNode( 'content', 'view', $contentObject->mainNode(), false ) === true )
+        {
+            $protocol = 'https://';
+            $sslPort = $ini->variable( 'SiteSettings', 'SSLPort' );
+            $portString = ( $sslPort == eZSSLZone::DEFAULT_SSL_PORT ) ? '' : ":$sslPort";
+        }
+
+        return $protocol . $host . eZSys::indexDir( false ) . '/' . $contentObject->mainNode()->urlAlias();
     }
 
     /**
