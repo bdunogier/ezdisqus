@@ -79,7 +79,7 @@ class DisqusWXR implements FormatterInterface
         $item = $this->xmlDoc->createElement( 'item' );
         $this->channelTag->appendChild( $item );
 
-        $item->appendChild( $this->xmlDoc->createElement( 'title', $thread->title ) );
+        $item->appendChild( $this->xmlDoc->createElement( 'title', htmlspecialchars( $thread->title ) ) );
         $item->appendChild( $this->xmlDoc->createElement( 'link', $thread->link ) );
         $contentThread = $this->xmlDoc->createElementNS( $this->rootNS['content'], 'content:encoded' );
         $contentThread->appendChild( $this->xmlDoc->createCDATASection( $thread->content ) );
@@ -127,7 +127,7 @@ class DisqusWXR implements FormatterInterface
             $this->xmlDoc->createElementNS( $this->rootNS['wp'], 'wp:comment_id', $comment->id )
         );
         $commentNode->appendChild(
-            $this->xmlDoc->createElementNS( $this->rootNS['wp'], 'wp:comment_author', $comment->authorName )
+            $this->xmlDoc->createElementNS( $this->rootNS['wp'], 'wp:comment_author', htmlspecialchars( $comment->authorName ) )
         );
         $commentNode->appendChild(
             $this->xmlDoc->createElementNS( $this->rootNS['wp'], 'wp:comment_author_email', $comment->authorMail )
