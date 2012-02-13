@@ -74,4 +74,12 @@ class Processor
     {
         return $this->formatter->renderString();
     }
+
+    public function split()
+    {
+        $splittedData = new SplittedData;
+        $splitter = $this->formatter->getSplitter();
+        $splitter->split( $splittedData );
+        return $splittedData;
+    }
 }

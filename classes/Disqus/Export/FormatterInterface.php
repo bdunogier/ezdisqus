@@ -44,4 +44,11 @@ interface FormatterInterface
      * @return mixed
      */
     public function getData();
+
+    /**
+     * Returns splitter object used to split exported data into several parts
+     *
+     * @return \Disqus\Export\SplitterInterface
+     */
+    public function getSplitter();
 }
