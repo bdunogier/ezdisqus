@@ -158,7 +158,7 @@ class EzComments implements ExporterInterface
             $portString = ( $sslPort == eZSSLZone::DEFAULT_SSL_PORT ) ? '' : ":$sslPort";
         }
 
-        return $protocol . $host . eZSys::indexDir( false ) . '/' . $contentObject->mainNode()->urlAlias();
+        return $protocol . $host . $portString . eZSys::indexDir( false ) . '/' . $contentObject->mainNode()->urlAlias();
     }
 
     /**
