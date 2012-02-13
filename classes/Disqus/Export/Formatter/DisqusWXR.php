@@ -224,7 +224,6 @@ class DisqusWXR implements FormatterInterface, SplitterInterface
         else
             $fileSize = strlen( $xmlString );
 
-        var_dump( $maxSize, $fileSize );
         $numberOfFiles = ceil( $fileSize / $maxSize );
         $splittedDataStruct->totalSize = $fileSize;
         $itemNodeList = $this->xmlDoc->getElementsByTagName( 'item' );
