@@ -10,13 +10,16 @@ namespace Disqus\Export\Formatter;
 use Disqus\Export\FormatterInterface,
     Disqus\Export\Thread,
     Disqus\Export\Comment,
+    Disqus\Export\SplitterInterface,
+    Disqus\Export\SplittedData,
+    \eZINI,
     \DOMDocument;
 
 /**
  * Formatter for Disqus WXR (Wordpress eXtended RSS) format.
  * @see http://docs.disqus.com/developers/export/import_format/
  */
-class DisqusWXR implements FormatterInterface
+class DisqusWXR implements FormatterInterface, SplitterInterface
 {
     private $debug;
 
@@ -54,9 +57,21 @@ class DisqusWXR implements FormatterInterface
      */
     public function initialize()
     {
-        $this->xmlDoc = new DOMDocument( '1.0', 'UTF-8' );
-        $this->xmlDoc->formatOutput = $this->debug;
-        $root = $this->xmlDoc->createElement( 'rss' );
+        $this->xmlDoc = $this->generateDomDocument();
+        $this->channelTag = $this->xmlDoc->createElement( 'channel' );
+        $this->xmlDoc->firstChild->appendChild( $this->channelTag );
+    }
+
+    /**
+     * Generates valid DOMDocument and appends its root <rss> tag
+     *
+     * @return \DOMDocument
+     */
+    private function generateDomDocument()
+    {
+        $xmlDoc = new DOMDocument( '1.0', 'UTF-8' );
+        $xmlDoc->formatOutput = $this->debug;
+        $root = $xmlDoc->createElement( 'rss' );
         $root->setAttribute( 'version', '2.0' );
         foreach ( $this->rootNS as $ns => $nsUrl )
         {
@@ -66,9 +81,8 @@ class DisqusWXR implements FormatterInterface
                 $nsUrl
             );
         }
-        $this->xmlDoc->appendChild( $root );
-        $this->channelTag = $this->xmlDoc->createElement( 'channel' );
-        $root->appendChild( $this->channelTag );
+        $xmlDoc->appendChild( $root );
+        return $xmlDoc;
     }
 
     /**
@@ -183,5 +197,54 @@ class DisqusWXR implements FormatterInterface
     public function getData()
     {
         return $this->xmlDoc;
+    }
+
+    /**
+     * Returns splitter object used to split exported data into several parts
+     *
+     * @return \Disqus\Export\SplitterInterface
+     */
+    public function getSplitter()
+    {
+        return $this;
+    }
+
+    /**
+     * Splits the exported data into several portions and stores it in $splittedDataStruct
+     *
+     * @param \Disqus\Export\SplittedData
+     * @return void
+     */
+    public function split( SplittedData $splittedDataStruct )
+    {
+        $maxSize = (int)eZINI::instance( 'disqus.ini' )->variable( 'ExportSettings', 'MaxFileSize' );
+        $xmlString = $this->renderString();
+        if ( function_exists( 'mb_strlen' ) )
+            $fileSize = mb_strlen( $xmlString );
+        else
+            $fileSize = strlen( $xmlString );
+
+        var_dump( $maxSize, $fileSize );
+        $numberOfFiles = ceil( $fileSize / $maxSize );
+        $splittedDataStruct->totalSize = $fileSize;
+        $itemNodeList = $this->xmlDoc->getElementsByTagName( 'item' );
+        $nodeIndex = 0;
+        for ( $i = 0; $i < $numberOfFiles; ++$i )
+        {
+            $doc = $this->generateDomDocument();
+            $channel = $doc->createElement( 'channel' );
+            $doc->firstChild->appendChild( $channel );
+            $maxIndex = $nodeIndex + ceil( $itemNodeList->length / $numberOfFiles );
+            // The double condition in while ensures that the loop will end if we reach the end of the $itemNodeList.
+            // Otherwise $itemNodeList->item() would not return a valid DOMNode
+            while ( $nodeIndex < $itemNodeList->length && $nodeIndex < $maxIndex )
+            {
+                $newNode = $doc->importNode( $itemNodeList->item( $nodeIndex ), true );
+                $channel->appendChild( $newNode );
+                $nodeIndex++;
+            }
+
+            $splittedDataStruct->stringArray[] = $doc->saveXML();
+        }
     }
 }
