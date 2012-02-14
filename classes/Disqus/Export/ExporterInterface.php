@@ -19,7 +19,7 @@ interface ExporterInterface
      *
      * @return string
      */
-    public function exporterName();
+    public function getName();
 
     /**
      * Initializes the exporter.

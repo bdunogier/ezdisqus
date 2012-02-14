@@ -48,9 +48,9 @@ class EzComments implements ExporterInterface
      *
      * @return string
      */
-    public function exporterName()
+    public function getName()
     {
-        return 'eZ Comments exporter';
+        return 'eZ Comments';
     }
 
     /**

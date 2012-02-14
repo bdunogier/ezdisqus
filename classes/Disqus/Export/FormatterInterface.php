@@ -51,4 +51,19 @@ interface FormatterInterface
      * @return \Disqus\Export\SplitterInterface
      */
     public function getSplitter();
+
+    /**
+     * Returns export format.
+     * Will be use as export file suffix.
+     *
+     * @return string
+     */
+    public function getFormat();
+
+    /**
+     * Returns the formatter human readable name.
+     *
+     * @return string
+     */
+    public function getName();
 }

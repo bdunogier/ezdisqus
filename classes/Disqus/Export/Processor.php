@@ -82,4 +82,15 @@ class Processor
         $splitter->split( $splittedData );
         return $splittedData;
     }
+
+    /**
+     * Returns export format.
+     * Will be use as export file suffix.
+     *
+     * @return string
+     */
+    public function getExportFormat()
+    {
+        return $this->formatter->getFormat();
+    }
 }

@@ -63,6 +63,27 @@ class DisqusWXR implements FormatterInterface, SplitterInterface
     }
 
     /**
+     * Returns the formatter human readable name.
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return 'Disqus WXR XML';
+    }
+
+    /**
+     * Returns export format.
+     * Will be use as export file suffix.
+     *
+     * @return string
+     */
+    public function getFormat()
+    {
+        return 'xml';
+    }
+
+    /**
      * Generates valid DOMDocument and appends its root <rss> tag
      *
      * @return \DOMDocument
