@@ -1,8 +1,8 @@
 ﻿{*
     Disqus template for top commenters.
     Available variables :
-      - $disqus_shortname (defaults to disqus.ini/[Base].DisqusShortname)
-      - $num_items (default to disqus.ini/[Commenters].items)
+      - disqus_shortname (defaults to disqus.ini/[Base].DisqusShortname)
+      - num_items (default to disqus.ini/[Commenters].items)
 	  - hide_mods (0/1) - Show/hide moderators (default to disqus.ini/[Commenters].items)
 	  - hide_avatars (0/1) - Show/hide avatars (default to disqus.ini/[Commenters].items)
 	  - avatar_size (valid values are 24, 32, 48, 92, 128) (default to disqus.ini/[Commenters].items)
