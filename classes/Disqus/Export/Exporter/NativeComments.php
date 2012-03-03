@@ -129,11 +129,13 @@ class NativeComments implements ExporterInterface
     {
         while( $nodeId = next( $this->nodes ) )
         {
+            // fetch the next node from the prefiltered list
             $node = eZContentObjectTreeNode::fetch( $nodeId );
             if ( !$node instanceof eZContentObjectTreeNode )
                 continue;
 
-            $comments = eZContentObjectTreeNode::subtreeByNodeId(
+            // fetch the comments under it, and bail out if there are none
+            $comments = eZContentObjectTreeNode::subTreeCountByNodeID(
                 array( 'ClassIdentifier' => 'comment' ),
                 $nodeId
             );
@@ -162,9 +164,9 @@ class NativeComments implements ExporterInterface
             $thread->identifier = $object->attribute( 'id' );
 
             // @todo change, we have a node here
-            $thread->link = $this->generateThreadLinkByContentObject( $contentObject );
+            $thread->link = $this->generateThreadLinkByContentObject( $object );
             $thread->postDate = new DateTime(
-                '@' . $object->attribute( 'published' ),
+                '@' . $node->object()->attribute( 'published' ),
                 new DateTimeZone( 'gmt' )
             );
 
@@ -177,25 +179,25 @@ class NativeComments implements ExporterInterface
     }
 
     /**
-     * Generates absolute link for thread (content object), taking care of SSL zones when applyable
+     * Generates absolute link for thread $node, taking care of SSL zones when applyable
      *
-     * @param eZContentObject $contentObject Content object to generate link for
+     * @param eZContentObjectTreeNode $node Node to generate link for
      * @return string
      */
-    protected function generateThreadLinkByContentObject( eZContentObject $contentObject )
+    protected function generateThreadLinkByContentObjectTreeNode( eZContentObjectTreeNode $node )
     {
         $ini = eZINI::instance();
         $protocol = 'http://';
         $portString = '';
         $host = $ini->variable( 'SiteSettings', 'SiteURL' );
-        if ( eZSSLZone::checkNode( 'content', 'view', $contentObject->mainNode(), false ) === true )
+        if ( eZSSLZone::checkNode( 'content', 'view', $node, false ) === true )
         {
             $protocol = 'https://';
             $sslPort = $ini->variable( 'SiteSettings', 'SSLPort' );
             $portString = ( $sslPort == eZSSLZone::DEFAULT_SSL_PORT ) ? '' : ":$sslPort";
         }
 
-        return $protocol . $host . $portString . eZSys::indexDir( false ) . '/' . $contentObject->mainNode()->urlAlias();
+        return $protocol . $host . $portString . eZSys::indexDir( false ) . '/' . $node->urlAlias();
     }
 
     /**
@@ -206,14 +208,16 @@ class NativeComments implements ExporterInterface
     public function getCommentsByThread( Thread $thread )
     {
         $comments = array();
-        // Using fetchByContentObjectIDList here because fetchByContentObjectID() has language as mandatory param.
-        $ezcomments = ezcomComment::fetchByContentObjectIDList( array( $thread->identifier ) );
-        foreach ( $ezcomments as $ezcomment )
+
+        $commentNodes = eZContentObjectTreeNode::subTreeByNodeID(
+            array( 'ClassIdentifier' => array_keys( $this->exportClasses ) ),
+            $thread->identifier
+        );
+        foreach ( $commentNodes as $commantNode )
         {
-            $comments[] = $this->buildCommentFromEzComment( $ezcomment );
+            $comments[] = $this->buildCommentFromNode( $coimmentNode );
         }
 
-        unset( $ezcomments );
         return $comments;
     }
 
@@ -221,20 +225,20 @@ class NativeComments implements ExporterInterface
      * @param \ezcomComment $ezcomment
      * @return \Disqus\Export\Comment
      */
-    protected function buildCommentFromEzComment( ezcomComment $ezcomment )
+    protected function buildCommentFromNode( eZContentObjectTreeNode $node )
     {
         $comment = new Comment;
-        $comment->id = $ezcomment->attribute( 'id' );
-        $comment->authorName = $ezcomment->attribute( 'name' );
-        $comment->authorMail = $ezcomment->attribute( 'email' );
-        $comment->authorIp = $ezcomment->attribute( 'ip' );
-        $comment->authorUrl = $ezcomment->attribute( 'url' );
+        $comment->id = $node->attribute( 'node_id' );
+        // $comment->authorName = $ezcomment->attribute( 'name' );
+        // $comment->authorMail = $ezcomment->attribute( 'email' );
+        // $comment->authorIp = $ezcomment->attribute( 'ip' );
+        // $comment->authorUrl = $ezcomment->attribute( 'url' );
         $comment->date = new DateTime(
-            '@' . $ezcomment->attribute( 'modified' ),
+            '@' . $node->attribute( 'published' ),
             new DateTimeZone( 'gmt' )
         );
-        $comment->content = $ezcomment->attribute( 'text' );
-        $comment->isApproved = $ezcomment->attribute( 'status' ) == 1;
+        // $comment->content = $ezcomment->attribute( 'text' );
+        // $comment->isApproved = $ezcomment->attribute( 'status' ) == 1;
 
         return $comment;
     }

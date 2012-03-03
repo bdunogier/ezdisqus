@@ -15,12 +15,12 @@ Out of the box, **eZDisqus** comes with:
 - Native datatype
 - Dashboard widget
 - Comment lookup in admin interface for each content object having Disqus datatype
-- Exporters to migrate from an existing commenting system (such as `eZComments <https://github.com/ezsystems/ezcomments>`_ 
+- Exporters to migrate from an existing commenting system (such as `eZComments <https://github.com/ezsystems/ezcomments>`_
   or native eZ Publish comments)
 
 Requirements
 ------------
-eZ Disqus requires eZ Publish version 4.6 (aka **Annapurna**, or 
+eZ Disqus requires eZ Publish version 4.6 (aka **Annapurna**, or
 `Community version 2011.6 <http://share.ez.no/downloads/downloads/ez-publish-community-project-2011.11>`_).
 
 PHP 5.3.x is required if you use the export system as it uses namespaces and some advanced features.
@@ -59,7 +59,7 @@ Export script example from eZComments::
   use Disqus\Export\Processor as ExportProcessor,
       Disqus\Export\Exporter\EzComments as EzCommentsExporter,
       Disqus\Export\Formatter\DisqusWXR as DisqusFormatter;
-  
+
   $processor = new ExportProcessor(
       new EzCommentsExporter(),
       new DisqusFormatter()
@@ -71,5 +71,12 @@ Note that above script would need to be run with ``ezexec.php``::
 
   php bin/php/ezexec.php extension/ezdisqus/bin/php/export.php
 
+Available exporters
+'''''''''''''''''''
+Default exporter classes can be found in the Disqus\Export\Exporter namespace.
 
+* EzCommentsExporter
+  Exports comments managed using the eZComments extension
+* NativeCommentsExporter
+  Exports comments managed using the comment content class, as content nodes
 
