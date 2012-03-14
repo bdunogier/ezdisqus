@@ -10,7 +10,8 @@ namespace Disqus\Export\Exporter;
 use Disqus\Export\ExporterInterface,
     Disqus\Export\Thread,
     Disqus\Export\Comment,
-    \eZContentObjectTreeNode;
+    \eZContentObjectTreeNode,
+    \eZINI;
 
 /**
  * Exporter for eZ Comments
@@ -64,17 +65,14 @@ class NativeComments implements ExporterInterface
     public function initialize()
     {
         // select all node ID that match the export settings
-        $disqusINI = eZINI::instance( 'disqus.ini' );
-        $exportClasses = $disqusINI->variable( 'NativeCommentsExporterSettings', 'Classes' );
-
-        foreach( $exportClasses as $exportClass )
+        foreach( eZINI::instance( 'disqus.ini' )->variable( 'NativeCommentsExporterSettings', 'Classes' ) as $exportClassIdentifier )
         {
-            if ( strstr( $exportClass, '/' ) !== false )
-                list( $exportClassIdentifier, $exportBooleanAttribute ) = explode( '/', $exportClass );
+            if ( strstr( $exportClassIdentifier, '/' ) !== false )
+                list( $exportClassIdentifier, $exportBooleanAttribute ) = explode( '/', $exportClassIdentifier );
             else
-                $exportBoolean = null;
+                $exportBooleanAttribute = null;
 
-            $exportClasses[$exportClassIdentifier] = $exportBoolean;
+            $exportClasses[$exportClassIdentifier] = $exportBooleanAttribute;
 
             $callParams = array(
                 'ClassIdentifier' => $exportClass,
