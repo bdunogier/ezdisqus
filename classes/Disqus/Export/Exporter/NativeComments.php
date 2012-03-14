@@ -11,7 +11,10 @@ use Disqus\Export\ExporterInterface,
     Disqus\Export\Thread,
     Disqus\Export\Comment,
     \eZContentObjectTreeNode,
-    \eZINI;
+    \eZINI,
+    \DateTime,
+    \DateTimeZone,
+    \eZContentObject;
 
 /**
  * Exporter for eZ Comments
@@ -72,23 +75,27 @@ class NativeComments implements ExporterInterface
             else
                 $exportBooleanAttribute = null;
 
-            $exportClasses[$exportClassIdentifier] = $exportBooleanAttribute;
+            // $exportClasses[$exportClassIdentifier] = $exportBooleanAttribute;
 
             $callParams = array(
-                'ClassIdentifier' => $exportClass,
+                'ClassFilterType' => 'include',
+                'ClassFilterArray' => array( $exportClassIdentifier ),
                 'AsObject' => false,
             );
 
-            if ( isset( $exportBoolean ) )
-            {
-                $callParams['AttributeFilter'][] = array(
-                    array( $exportBoolean, '=', 1 ),
-                );
-            }
-            $commentedNodes = eZContentObjectTreeNode::subTreeByNodeID( $callParams, 1 );
-        }
+            if ( isset( $exportBooleanAttribute ) )
+                $callParams['AttributeFilter'][] = array( "$exportClassIdentifier/$exportBooleanAttribute", '=', 1 );
 
-        $this->nodes = $commentedNodes;
+            $commentedNodes = eZContentObjectTreeNode::subTreeByNodeID( $callParams, 1 );
+
+            if ( is_array( $commentedNodes ) && count( $commentedNodes ) )
+            {
+                foreach ( $commentedNodes as $node )
+                {
+                    $this->nodes[] = $node['node_id'];
+                }
+            }
+        }
     }
 
     /**
@@ -162,13 +169,13 @@ class NativeComments implements ExporterInterface
             $thread->identifier = $object->attribute( 'id' );
 
             // @todo change, we have a node here
-            $thread->link = $this->generateThreadLinkByContentObject( $object );
+            //$thread->link = $this->generateThreadLinkByContentObject( $object );
             $thread->postDate = new DateTime(
                 '@' . $node->object()->attribute( 'published' ),
                 new DateTimeZone( 'gmt' )
             );
 
-            eZContentObject::clearCache( array( $contentObject->attribute( 'id' ) ) );
+            eZContentObject::clearCache( array( $object->attribute( 'id' ) ) );
 
             return $thread;
         }
