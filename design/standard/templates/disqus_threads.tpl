@@ -3,7 +3,7 @@
     Available variables :
       - $disqus_shortname (defaults to disqus.ini/[Base].DisqusShortname)
       - $num_items (default to disqus.ini/[Threads].items)
-	  
+
 	You can pass those variables via the include parameters :
     {include uri="design:standard/disqus_threads.tpl" num_items=5}
 *}

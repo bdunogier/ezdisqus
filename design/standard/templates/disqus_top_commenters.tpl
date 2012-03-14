@@ -6,7 +6,7 @@
 	  - hide_mods (0/1) - Show/hide moderators (default to disqus.ini/[Commenters].items)
 	  - hide_avatars (0/1) - Show/hide avatars (default to disqus.ini/[Commenters].items)
 	  - avatar_size (valid values are 24, 32, 48, 92, 128) (default to disqus.ini/[Commenters].items)
-	  
+
 	You can pass those variables via the include parameters :
     {include uri='design:disqus_top_commenters.tpl' num_items=5 hide_mods=0 hide_avatars=0 avatar_size=24}
 *}

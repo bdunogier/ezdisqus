@@ -6,7 +6,7 @@
 	  - hide_avatars (0/1) - Show/hide avatars (default to disqus.ini/[Comments].items)
 	  - avatar_size (valid values are 24, 32, 48, 92, 128) (default to disqus.ini/[Comments].items)
 	  - excerpt_length comment excerpt length (default to disqus.ini/[Comments].items)
-	  
+
 	You can pass those variables via the include parameters :
     {include uri='design:disqus_recente_comments.tpl' num_items=5 hide_avatars=0 avatar_size=24 excerpt_length=200}
 *}
