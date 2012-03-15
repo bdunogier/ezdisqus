@@ -14,6 +14,8 @@ use Disqus\Export\ExporterInterface,
     \eZINI,
     \DateTime,
     \DateTimeZone,
+    \eZSSLZone,
+    \eZSys,
     \eZContentObject;
 
 /**
@@ -22,9 +24,9 @@ use Disqus\Export\ExporterInterface,
 class NativeComments implements ExporterInterface
 {
     /**
-     * Array of potentially commented nodes
+     * Map of potentially commented nodes
      *
-     * @var array[(array)ezcontentobjecttreenode]
+     * @var array[(array)ezcontentobjecttreenode => true]
      */
     private $nodes = array();
 
@@ -75,7 +77,7 @@ class NativeComments implements ExporterInterface
             else
                 $exportBooleanAttribute = null;
 
-            // $exportClasses[$exportClassIdentifier] = $exportBooleanAttribute;
+            $this->exportClasses[$exportClassIdentifier] = $exportBooleanAttribute;
 
             $callParams = array(
                 'ClassFilterType' => 'include',
@@ -92,7 +94,7 @@ class NativeComments implements ExporterInterface
             {
                 foreach ( $commentedNodes as $node )
                 {
-                    $this->nodes[] = $node['node_id'];
+                    $this->nodes[$node['node_id']] = true;
                 }
             }
         }
@@ -132,28 +134,33 @@ class NativeComments implements ExporterInterface
      */
     public function getNextThread()
     {
-        while( $nodeId = next( $this->nodes ) )
+        foreach( array_keys( $this->nodes ) as $nodeId )
         {
+            unset( $this->nodes[$nodeId] );
+
             // fetch the next node from the prefiltered list
             $node = eZContentObjectTreeNode::fetch( $nodeId );
             if ( !$node instanceof eZContentObjectTreeNode )
                 continue;
 
             // fetch the comments under it, and bail out if there are none
-            $comments = eZContentObjectTreeNode::subTreeCountByNodeID(
-                array( 'ClassIdentifier' => 'comment' ),
+            $commentsCount = eZContentObjectTreeNode::subTreeCountByNodeID(
+                array(
+                    'ClassFilterType' => 'include',
+                    'ClassFilterArray' => array( 'comment' )
+                ),
                 $nodeId
             );
 
-            if ( !count( $comments ) )
+            if ( !$commentsCount )
                 continue;
 
             // Check for boolean attribute
             $object = $node->object();
-            $classIdentifier = $object->attribute('identifier');
+            $dataMap = $object->dataMap();
+            $classIdentifier = $object->attribute( 'class_identifier' );
             if ( isset( $this->exportClasses[$classIdentifier] ) && $this->exportClasses[$classIdentifier] !== null )
             {
-                $dataMap = $object->dataMap();
                 if ( !isset( $dataMap[$this->exportClasses[$classIdentifier] ] ) )
                     throw new InvalidArgumentException( "unknown attribute {$this->exportClasses[$classIdentifier]}" );
 
@@ -165,11 +172,10 @@ class NativeComments implements ExporterInterface
             // Building the Thread object
             // title and content properties get the same content since $thread->content is not really important
             $thread = new Thread;
+            $thread->commentsEnabled = isset( $this->exportClasses[$classIdentifier] ) ? (bool)$dataMap[$this->exportClasses[$classIdentifier]]->attribute('content') : true;
             $thread->title = $thread->content = $object->name();
             $thread->identifier = $object->attribute( 'id' );
-
-            // @todo change, we have a node here
-            //$thread->link = $this->generateThreadLinkByContentObject( $object );
+            $thread->link = $this->generateThreadLinkByContentObjectTreeNode( $node );
             $thread->postDate = new DateTime(
                 '@' . $node->object()->attribute( 'published' ),
                 new DateTimeZone( 'gmt' )
@@ -214,13 +220,21 @@ class NativeComments implements ExporterInterface
     {
         $comments = array();
 
+        $nodes = eZContentObjectTreeNode::fetchByContentObjectID( $thread->identifier, false );
+        foreach( $nodes as $node )
+            $nodeIds[] = $node['node_id'];
+
         $commentNodes = eZContentObjectTreeNode::subTreeByNodeID(
-            array( 'ClassIdentifier' => array_keys( $this->exportClasses ) ),
-            $thread->identifier
+            array(
+                'ClassFilterType' => 'include',
+                'ClassFilterArray' => array( 'comment' )
+            ),
+            $nodeIds
         );
-        foreach ( $commentNodes as $commantNode )
+
+        foreach ( $commentNodes as $commentNode )
         {
-            $comments[] = $this->buildCommentFromNode( $coimmentNode );
+            $comments[] = $this->buildCommentFromNode( $commentNode );
         }
 
         return $comments;
@@ -232,6 +246,9 @@ class NativeComments implements ExporterInterface
      */
     protected function buildCommentFromNode( eZContentObjectTreeNode $node )
     {
+        $contentObject = $node->attribute( 'object' );
+        $dataMap = $contentObject->attribute( 'data_map' );
+
         $comment = new Comment;
         $comment->id = $node->attribute( 'node_id' );
         // $comment->authorName = $ezcomment->attribute( 'name' );
@@ -239,11 +256,11 @@ class NativeComments implements ExporterInterface
         // $comment->authorIp = $ezcomment->attribute( 'ip' );
         // $comment->authorUrl = $ezcomment->attribute( 'url' );
         $comment->date = new DateTime(
-            '@' . $node->attribute( 'published' ),
+            '@' . $contentObject->attribute( 'published' ),
             new DateTimeZone( 'gmt' )
         );
-        // $comment->content = $ezcomment->attribute( 'text' );
-        // $comment->isApproved = $ezcomment->attribute( 'status' ) == 1;
+        $comment->content = $dataMap['message'];
+        $comment->isApproved = true;
 
         return $comment;
     }
