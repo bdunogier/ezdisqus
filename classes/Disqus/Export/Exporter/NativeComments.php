@@ -246,21 +246,24 @@ class NativeComments implements ExporterInterface
      */
     protected function buildCommentFromNode( eZContentObjectTreeNode $node )
     {
-        $contentObject = $node->attribute( 'object' );
+        $contentObject = $node->object();
         $dataMap = $contentObject->attribute( 'data_map' );
+        $creatorDataMap = $contentObject->attribute( 'owner' )->attribute( 'data_map' );
 
         $comment = new Comment;
         $comment->id = $node->attribute( 'node_id' );
-        // $comment->authorName = $ezcomment->attribute( 'name' );
-        // $comment->authorMail = $ezcomment->attribute( 'email' );
+        $comment->authorName = $dataMap['author']->attribute( 'content' );
+        $comment->authorMail = $creatorDataMap['user_account']->attribute( 'content' )->attribute( 'email' );
         // $comment->authorIp = $ezcomment->attribute( 'ip' );
         // $comment->authorUrl = $ezcomment->attribute( 'url' );
         $comment->date = new DateTime(
             '@' . $contentObject->attribute( 'published' ),
             new DateTimeZone( 'gmt' )
         );
-        $comment->content = $dataMap['message'];
+        $comment->content = $dataMap['message']->attribute( 'content' );
         $comment->isApproved = true;
+
+        // print_r( $comment );
 
         return $comment;
     }
