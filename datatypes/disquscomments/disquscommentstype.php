@@ -153,7 +153,7 @@ class DisqusCommentsType extends eZDataType
     public function fetchObjectAttributeHTTPInput( $http, $base, $contentObjectAttribute )
     {
         $fieldName = $base . self::COMMENTS_ENABLED_VARIABLE . $contentObjectAttribute->attribute( 'id' );
-        $value = ( $http->hasPostVariable( $fieldName ) ? 1 : 0 );
+        $value = $http->hasPostVariable( $fieldName ) ? 1 : 0;
         $contentObjectAttribute->setAttribute( 'data_int', $value );
 
         return true;
