@@ -1,6 +1,6 @@
 eZDisqus
 ========
-
+[![Analytics](https://ga-beacon.appspot.com/UA-52121860-1/ezdisqus/readme)](https://github.com/igrigorik/ga-beacon)
 **eZDisqus** is an integration of `Disqus commenting system <httsp://disqus.com>`_ in eZ Publish.
 
 The goal is to have a tight integration of the **Disqus** service inside any eZ Publish installation.
