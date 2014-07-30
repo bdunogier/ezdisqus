@@ -26,7 +26,7 @@
 
 {/if}
 {if is_set( $disqus_title )}
-    var disqus_title = '{$disqus_title|wash}';
+    var disqus_title = "{$disqus_title|wash( 'javascript' )}";
 
 {/if}
 
