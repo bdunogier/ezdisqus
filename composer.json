@@ -1,0 +1,18 @@
+{
+    "name": "bdunogier/ezdisqusls",
+    "description": "Disqus integration for eZ Publish legacy",
+    "license": "GPL-3.0",
+    "authors": [
+        {
+            "name": "Bertrand Dunogier",
+            "email": "bertrand.dunogier@gmail.com"
+        },
+        {
+            "name": "Jérôme Vieilledent",
+            "email": "lolautruche@gmail.com"
+        }
+    ],
+    "require": {
+        "ezsystems/ezpublish-legacy-installer": "~2.0"
+    }
+}
