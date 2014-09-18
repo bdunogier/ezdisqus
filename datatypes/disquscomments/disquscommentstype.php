@@ -188,12 +188,17 @@ class DisqusCommentsType extends eZDataType
     public function objectAttributeContent( $contentObjectAttribute )
     {
         $contentObject = $contentObjectAttribute->object();
+        $url = false;
+        if ( !( $contentObject->mainNode() instanceof eZContentObjectTreeNode ) )
+        {
+            $url = $contentObject->mainNode()->urlAlias();
+        } 
         return array(
             'comments_enabled' => (bool)$contentObjectAttribute->attribute( 'data_int' ),
             'shortname'        => eZINI::instance( 'disqus.ini' )->variable( 'Base', 'DisqusShortname' ),
             'identifier'       => $contentObjectAttribute->attribute( 'contentobject_id' ),
             'title'            => $contentObject->name(),
-            'url'              => $contentObject->mainNode()->urlAlias()
+            'url'              => $url
         );
     }
 
