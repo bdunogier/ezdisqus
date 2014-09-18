@@ -1,5 +1,5 @@
 {
-    "name": "bdunogier/ezdisqusls",
+    "name": "bdunogier/ezdisqus-ls",
     "description": "Disqus integration for eZ Publish legacy",
     "license": "GPL-3.0",
     "authors": [
