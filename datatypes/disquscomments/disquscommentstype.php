@@ -189,7 +189,7 @@ class DisqusCommentsType extends eZDataType
     {
         $contentObject = $contentObjectAttribute->object();
         $url = false;
-        if ( is_object( $contentObject->mainNode() ) )
+        if ( !( $contentObject->mainNode() instanceof eZContentObjectTreeNode ) )
         {
             $url = $contentObject->mainNode()->urlAlias();
         } 
